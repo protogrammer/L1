@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/base64"
 	"sort"
 )
 
@@ -24,4 +25,9 @@ func PasswordIsStrong(password string) bool {
 		}
 	}
 	return acc >= MinUniqueSymbolsInPassword
+}
+
+func PasswordFromUrlEncoding(passUrl string) (string, error) {
+	p, err := base64.URLEncoding.DecodeString(passUrl)
+	return string(p), err
 }

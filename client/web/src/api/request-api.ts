@@ -16,8 +16,11 @@ export const requestApi = (
   onReject: (reject: any) => boolean = () => false
 ): void => {
   let flag = false;
-  for (const [name, value] of Object.entries(params)) {
+  for (let [name, value] of Object.entries(params)) {
     if (value === undefined) continue;
+    if (["password", "newPassword"].includes(name)) {
+      value = btoa(unescape(encodeURIComponent(value)));
+    }
     if (flag) {
       relPath += "&";
     } else {

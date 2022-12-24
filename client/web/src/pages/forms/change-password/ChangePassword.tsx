@@ -57,18 +57,11 @@ const ChangePassword: React.FC = () => {
         newPassword: newPassword,
       },
       "POST",
-      onCommand(navigate, setAlertText),
+      onCommand(navigate, setAlertText, false),
       (err) => {
         setAlertText("упс... произошла ошибка");
         console.log(`error: ${err}`);
         return true;
-      },
-      (e) => {
-        if (e instanceof TypeError) {
-          navigate("/");
-          return true;
-        }
-        return false;
       }
     );
   };

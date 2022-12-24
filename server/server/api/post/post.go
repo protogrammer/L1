@@ -3,7 +3,6 @@ package post
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"server/cookie"
 	"server/db"
@@ -18,12 +17,10 @@ import (
 
 func NewUser(c *gin.Context) {
 	username := c.Request.URL.Query().Get(consts.ParamUsername)
-	password := c.Request.URL.Query().Get(consts.ParamPassword)
+	passwordUrl := c.Request.URL.Query().Get(consts.ParamPassword)
+	password, err := utils.PasswordFromUrlEncoding(passwordUrl)
 
-	log.Println(username, password)
-	log.Println(utils.UsernameIsValid(username), utils.PasswordIsStrong(password))
-
-	if !utils.UsernameIsValid(username) || !utils.PasswordIsStrong(password) {
+	if err != nil || !utils.UsernameIsValid(username) || !utils.PasswordIsStrong(password) {
 		reterror.InvalidUsernameOrPassword(c)
 		return
 	}
@@ -58,8 +55,20 @@ func ChangePassword(c *gin.Context) {
 		return
 	}
 
-	password := c.Request.URL.Query().Get(consts.ParamPassword)
-	newPassword := c.Request.URL.Query().Get(consts.ParamNewPassword)
+	passwordUrl := c.Request.URL.Query().Get(consts.ParamPassword)
+	password, err := utils.PasswordFromUrlEncoding(passwordUrl)
+	if err != nil {
+		reterror.InvalidUsernameOrPassword(c)
+		return
+	}
+
+	newPasswordUrl := c.Request.URL.Query().Get(consts.ParamNewPassword)
+	newPassword, err := utils.PasswordFromUrlEncoding(newPasswordUrl)
+	if err != nil {
+		reterror.InvalidUsernameOrPassword(c)
+		return
+	}
+
 	userIdString := c.Request.URL.Query().Get(consts.ParamUserId)
 	userId, err := strconv.ParseUint(userIdString, 10, 64)
 	if err != nil {
@@ -89,14 +98,15 @@ func ChangePassword(c *gin.Context) {
 
 	cookie.Delete(token)
 	shared.GiveCookie(c, authorized)
-	retcommand.Success(c)
+	retcommand.Data(c, authorized.H())
 }
 
 func Login(c *gin.Context) {
 	username := c.Request.URL.Query().Get(consts.ParamUsername)
-	password := c.Request.URL.Query().Get(consts.ParamPassword)
+	passwordUrl := c.Request.URL.Query().Get(consts.ParamPassword)
+	password, err := utils.PasswordFromUrlEncoding(passwordUrl)
 
-	if !utils.UsernameIsValid(username) || !utils.PasswordIsStrong(password) {
+	if err != nil || !utils.UsernameIsValid(username) || !utils.PasswordIsStrong(password) {
 		reterror.InvalidUsernameOrPassword(c)
 		return
 	}
