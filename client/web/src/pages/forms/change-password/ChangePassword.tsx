@@ -28,7 +28,9 @@ const ChangePassword: React.FC = () => {
   if (username === null || userId === null) {
     return (
       <RemoveScroll className={`remove-scroll`}>
-        <h1>Перед тем, как сменить пароль, необходимо войти</h1>
+        <h1 style={{ fontSize: 26 }}>
+          Перед тем, как сменить пароль, необходимо войти
+        </h1>
         <div className={`button-list`} style={{ justifyContent: "center" }}>
           <button type={"button"} onClick={() => navigate("/login")}>
             Ко входу
